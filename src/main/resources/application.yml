@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jinwan429@gmail.com
+    password: pvcw tard mjto ysvb
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: jdbc:h2:tcp://localhost/~/login
     username: sa
