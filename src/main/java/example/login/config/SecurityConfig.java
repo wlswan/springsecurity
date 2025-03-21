@@ -27,12 +27,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((auth) -> auth.disable());
+                .csrf(auth-> auth.disable());
 
 
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/","/login","/join", "/loginForm","/joinForm").permitAll()
+                        .requestMatchers("/auth/send-verification", "/auth/verify-code").permitAll() // 인증 없이 접근 허용
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated());

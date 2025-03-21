@@ -19,44 +19,44 @@
 
         .register-container {
             background: rgba(0, 0, 0, 0.8);
-            padding: 50px;
+            padding: 40px;
             border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             text-align: center;
         }
 
         .register-container h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
             font-weight: bold;
         }
 
         .error-message {
             background: rgba(255, 50, 50, 0.9);
-            padding: 12px;
+            padding: 10px;
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 15px;
             color: #fff;
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
         }
 
         .form-group input {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 1px solid #777;
             border-radius: 6px;
             background: #222;
@@ -73,12 +73,12 @@
 
         .form-group button {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             border: none;
             border-radius: 6px;
             background: #e50914;
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
@@ -89,19 +89,35 @@
             background: #d10813;
         }
 
+        .verify-group {
+            display: none; /* 인증 입력 필드는 기본적으로 숨김 */
+            margin-top: 10px;
+        }
+
         .form-footer {
-            margin-top: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
         }
 
         .form-footer a {
             color: #fff;
             text-decoration: none;
-            font-size: 1rem;
             font-weight: 500;
         }
 
         .form-footer a:hover {
             text-decoration: underline;
+        }
+
+        .verification-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        #verifyCodeBtn {
+            flex-shrink: 0;
+            padding: 12px;
+            width: 40%;
         }
     </style>
 </head>
@@ -116,8 +132,21 @@
 
     <form th:action="@{/join}" method="POST">
         <div class="form-group">
-            <label for="username">Email</label>
-            <input type="email" id="username" name="username" placeholder="Enter your email" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="username" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+            <button type="button" id="sendCodeBtn">Send Verification Code</button>
+        </div>
+
+        <!-- 인증 코드 입력 칸 + 확인 버튼 -->
+        <div class="form-group verify-group" id="verify-group">
+            <label for="verificationCode">Enter Verification Code</label>
+            <div class="verification-container">
+                <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter code">
+                <button type="button" id="verifyCodeBtn">Verify</button>
+            </div>
         </div>
 
         <div class="form-group">
@@ -134,5 +163,68 @@
         </div>
     </form>
 </div>
+
+<script>
+    function validateEmail(email) {
+        const re = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
+        return re.test(email);
+    }
+
+    // 이메일 인증 코드 요청
+    document.getElementById('sendCodeBtn').addEventListener('click', function() {
+        let email = document.getElementById('email').value;
+
+        if (!email || !validateEmail(email)) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+
+        fetch('/auth/send-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('verify-group').style.display = 'block';
+                alert("인증 코드가 전송되었습니다.");
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            alert("Error sending verification code.");
+        });
+    });
+
+    document.getElementById('verifyCodeBtn').addEventListener('click', function() {
+        let email = document.getElementById('email').value;
+        let verificationCode = document.getElementById('verificationCode').value;
+
+        if (!verificationCode) {
+            alert("Please enter the verification code.");
+            return;
+        }
+
+        fetch('/auth/verify-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, code: verificationCode })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("인증 성공!");
+            } else {
+                alert("인증 실패");
+            }
+        })
+        .catch(error => {
+            alert("Error verifying the code.");
+        });
+    });
+</script>
+
 </body>
 </html>

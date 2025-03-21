@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +36,13 @@ public class User {
 
     private String providerId;
 
+    private boolean isVerified = false;
+
+    private String verificationToken;
+
+    public void generateVerificationToken() {
+        this.verificationToken = UUID.randomUUID().toString();
+    }
 
 
 
