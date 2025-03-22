@@ -1,5 +1,6 @@
 package example.login.config;
 
+import example.login.auth.PrincipalDetailsService;
 import example.login.auth.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ public class SecurityConfig {
 
 
     private final PrincipalOauth2UserService principalOauth2UserService;
+    private final PrincipalDetailsService principalDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,6 +53,11 @@ public class SecurityConfig {
                         .userService(principalOauth2UserService)));
 
 
+        http.rememberMe((remember) -> remember
+                .key("myseretkey")
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(14*24*60*60)
+                .userDetailsService(principalDetailsService));
 
         return http.build();
     }

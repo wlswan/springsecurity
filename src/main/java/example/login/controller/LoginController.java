@@ -87,7 +87,7 @@ public class LoginController {
             return "redirect:/joinForm?error";
         }
         session.removeAttribute("verifiedEmail");
-        return "redirect:/loginForm";
+        return "loginForm";
 
     }
     @Secured("ROLE_ADMIN")
