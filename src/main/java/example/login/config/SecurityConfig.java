@@ -2,6 +2,7 @@ package example.login.config;
 
 import example.login.auth.PrincipalDetailsService;
 import example.login.auth.oauth.PrincipalOauth2UserService;
+import example.login.repository.RememberMeTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ public class SecurityConfig {
 
     private final PrincipalOauth2UserService principalOauth2UserService;
     private final PrincipalDetailsService principalDetailsService;
+    private final RememberMeTokenRepository rememberMeTokenRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -57,7 +59,13 @@ public class SecurityConfig {
                 .key("myseretkey")
                 .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(14*24*60*60)
+                .tokenRepository(rememberMeTokenRepository)
                 .userDetailsService(principalDetailsService));
+
+        http.logout((logout)->logout
+                .logoutUrl("/logout")
+                .deleteCookies("JSESSIONID","remember-me")
+                .permitAll());
 
         return http.build();
     }
