@@ -1,5 +1,5 @@
-package example.login.repository;
-import example.login.entity.PersistentLogin;
+package example.login.rememberme.repository;
+import example.login.rememberme.entity.PersistentLogin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;

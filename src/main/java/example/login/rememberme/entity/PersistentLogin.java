@@ -1,4 +1,4 @@
-package example.login.entity;
+package example.login.rememberme.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

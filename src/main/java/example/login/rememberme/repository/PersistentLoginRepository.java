@@ -1,6 +1,6 @@
-package example.login.repository;
+package example.login.rememberme.repository;
 
-import example.login.entity.PersistentLogin;
+import example.login.rememberme.entity.PersistentLogin;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

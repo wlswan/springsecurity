@@ -2,20 +2,18 @@ package example.login.config;
 
 import example.login.auth.PrincipalDetailsService;
 import example.login.auth.oauth.PrincipalOauth2UserService;
-import example.login.repository.RememberMeTokenRepository;
+import example.login.filter.JwtFilter;
+import example.login.rememberme.repository.RememberMeTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/send-verification", "/auth/verify-code").permitAll() // 인증 없이 접근 허용
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/**").authenticated() // JWT로 보호
+                        .requestMatchers("/jwtTest").authenticated() // 추가
                         .anyRequest().authenticated());
 
         http.formLogin((auth) -> auth
@@ -66,6 +66,8 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .deleteCookies("JSESSIONID","remember-me")
                 .permitAll());
+
+        http.addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

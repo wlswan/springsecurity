@@ -48,6 +48,7 @@ public class PrincipalOauth2UserService implements OAuth2UserService {
                     .username(username)
                     .email(email)
                     .password(null)
+                    .isVerified(true)
                     .provider(provider)
                     .providerId(providerId)
                     .role("ROLE_USER")
